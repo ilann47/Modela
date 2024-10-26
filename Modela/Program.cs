@@ -1,3 +1,6 @@
+using MySql.Data.MySqlClient;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +8,11 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+builder.Services.AddScoped<MySqlConnection>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+    return new MySqlConnection(connectionString);
+});
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
