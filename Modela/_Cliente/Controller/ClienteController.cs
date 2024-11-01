@@ -1,11 +1,11 @@
 ﻿// ClienteController.cs
 using Microsoft.AspNetCore.Mvc;
-using Modela.Models;
 using System.Collections.Generic;
-using Modela.Services;
-using Modela.DTOs;
+using Modela._Cliente.Repository.Dto;
+using Modela._Cliente.Service;
+using Modela.Home.Controllers;
 
-namespace Modela.Controllers
+namespace Modela._Cliente.Controllers
 {
     public class ClienteController : HomeController
     {

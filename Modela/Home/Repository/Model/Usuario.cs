@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Modela._Pessoa.Repository.Model;
 
-namespace Modela.Models;
+namespace Modela._Home.Repository.Model;
 
-public class Usuario {
+public class Usuario
+{
 
     public Pessoa Pessoa { get; set; }
 
@@ -16,7 +18,8 @@ public class Usuario {
 
     public DateTime PrimeiroLogin { get; set; }
 
-    public Usuario() {
+    public Usuario()
+    {
         Pessoa = new Pessoa();
     }
 
@@ -30,7 +33,8 @@ public class Usuario {
         string? email,
         string? password,
         DateTime primeiroLogin
-     ) {
+     )
+    {
         Id = id;
         Email = email;
         Password = password;

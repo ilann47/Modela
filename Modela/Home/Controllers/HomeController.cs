@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Modela.Models;
+using Modela._Home.Repository.Model;
 using System.Diagnostics;
 
-namespace Modela.Controllers
+namespace Modela.Home.Controllers
 {
     public class HomeController : Controller
     {

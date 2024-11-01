@@ -1,8 +1,8 @@
-﻿using Modela.Models;
-using Modela.DTOs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Modela._Cliente.Repository.Dto;
+using Modela._Cliente.Repository.Model;
 
-namespace Modela.Services
+namespace Modela._Cliente.Service
 {
     public interface IClienteService
     {

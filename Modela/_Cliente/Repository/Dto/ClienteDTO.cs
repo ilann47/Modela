@@ -1,6 +1,4 @@
-﻿using Modela.Models;
-using Modela.Services;
-namespace Modela.DTOs
+﻿namespace Modela._Cliente.Repository.Dto
 {
     public class ClienteDTO
     {

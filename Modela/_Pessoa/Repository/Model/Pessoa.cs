@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Modela.Models;
+namespace Modela._Pessoa.Repository.Model;
 
-public class Pessoa {
+public class Pessoa
+{
 
     public int Id { get; set; } = 0;
 
@@ -18,7 +19,8 @@ public class Pessoa {
 
     public Pessoa() { }
 
-    public Pessoa(int id, string? nome, string? sobrenome, DateTime nascimento, char sexo) {
+    public Pessoa(int id, string? nome, string? sobrenome, DateTime nascimento, char sexo)
+    {
         Id = id;
         Nome = nome;
         Sobrenome = sobrenome;

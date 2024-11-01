@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Modela._Home.Repository.Model;
 
-namespace Modela.Models
+namespace Modela._Cliente.Repository.Model
 {
     public class Cliente : Usuario
     {

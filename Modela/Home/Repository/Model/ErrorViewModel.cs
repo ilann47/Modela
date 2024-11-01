@@ -1,4 +1,4 @@
-namespace Modela.Models
+namespace Modela._Home.Repository.Model
 {
     public class ErrorViewModel
     {
