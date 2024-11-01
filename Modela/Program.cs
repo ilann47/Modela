@@ -1,29 +1,28 @@
 using MySql.Data.MySqlClient;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adiciona os serviços ao contêiner.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
-
+// Configura a conexão com MySQL como um serviço
 builder.Services.AddScoped<MySqlConnection>(sp =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
     return new MySqlConnection(connectionString);
 });
-// Configure the HTTP request pipeline.
+
+var app = builder.Build(); // Essa linha agora vem depois da configuração de serviços.
+
+// Configura o pipeline de requisições HTTP.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();
