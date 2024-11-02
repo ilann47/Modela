@@ -26,16 +26,17 @@ namespace Modela.Controllers
 
         // POST: api/Cliente/Create
         [HttpPost]
-        public IActionResult Create([FromBody] ClienteDTO clienteDTO)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ClienteDTO clienteDTO)
         {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Dados de cliente inválidos na tentativa de criação.");
-                return BadRequest(ModelState);
+                return View(clienteDTO); // Renderiza a view com os erros de validação
             }
 
             var cliente = _clienteService.Create(clienteDTO);
-            return CreatedAtAction(nameof(GetById), new { id = cliente.ClienteId }, cliente);
+            return RedirectToAction("GetById", new { id = cliente.ClienteId });
         }
 
         // GET: api/Cliente/{id}
