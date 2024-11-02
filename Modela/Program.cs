@@ -1,9 +1,15 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Modela.Services;
 using MySql.Data.MySqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona os serviços ao contêiner.
+// Configuração de serviços
 builder.Services.AddControllersWithViews();
+
+// Registra a implementação do serviço IClienteService
+builder.Services.AddScoped<IClienteService, ClienteService>();
 
 // Configura a conexão com MySQL como um serviço
 builder.Services.AddScoped<MySqlConnection>(sp =>
@@ -12,9 +18,9 @@ builder.Services.AddScoped<MySqlConnection>(sp =>
     return new MySqlConnection(connectionString);
 });
 
-var app = builder.Build(); // Essa linha agora vem depois da configuração de serviços.
+var app = builder.Build();
 
-// Configura o pipeline de requisições HTTP.
+// Configura o pipeline de requisições HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -27,6 +33,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Configuração da rota padrão, permitindo o acesso ao ClienteController
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
