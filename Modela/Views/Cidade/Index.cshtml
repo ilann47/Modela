@@ -1,0 +1,50 @@
+﻿@using Modela.Models
+@using Modela.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    ViewData["Title"] = "Lista de Cidades";
+
+    string SelectedEstadoNome = Model.SelectedEstado == null ? "" : $" - {Model.SelectedEstado.Nome}";
+}
+
+@model CidadeViewModel
+
+<div class="container">
+    <h1 class="text-center">@ViewData["Title"]@SelectedEstadoNome</h1>
+
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Selecione o Estado
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 500px; overflow-y: auto;">
+            @foreach (var estado in Model.Estados) {
+                <a class="dropdown-item" href="/cidade/@estado.Id">@estado.Nome</a>
+            }
+        </div>
+    </div>
+
+
+    @if (Model.Cidades.Count > 0) {
+        <table class="table table-striped table-bordered mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Cidade cidade in Model.Cidades) {
+                    <tr>
+                        <td>@cidade.Id</td>
+                        <td>@cidade.Nome</td>
+                        <td>@cidade.Estado!.Sigla</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
