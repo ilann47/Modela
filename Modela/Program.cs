@@ -1,28 +1,31 @@
-using MySql.Data.MySqlClient;
+using Modela.Data;
+using Modela.Data.IBGERepositories;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Adiciona os serviços ao contêiner.
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Configura a conexão com MySQL como um serviço
-builder.Services.AddScoped<MySqlConnection>(sp =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
-    return new MySqlConnection(connectionString);
-});
+IPaisRepository paisRepository = new PaisIBGERepository();
+IEstadoRepository estadoRepository = new EstadoIBGERepository(paisRepository);
+ICidadeRepository cidadeRepository = new CidadeIBERepository(paisRepository, estadoRepository);
 
-var app = builder.Build(); // Essa linha agora vem depois da configuração de serviços.
+builder.Services.AddScoped<IPaisRepository>(provider => paisRepository);
+builder.Services.AddScoped<IEstadoRepository>(provider => estadoRepository);
+builder.Services.AddScoped<ICidadeRepository>(provider => cidadeRepository);
 
-// Configura o pipeline de requisições HTTP.
+WebApplication app = builder.Build();
+
+// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
