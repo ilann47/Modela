@@ -21,6 +21,11 @@ public class CidadeIBERepository : ICidadeRepository {
 
     public async Task<List<Cidade>> GetByEstadoId(int estadoId) {
         Estado? estado = (await _estadoRepository.GetTodos()).Find(e => e.Id == estadoId);
+
+        if (estado == null) {
+            return []; 
+        }
+
         Stream responseStream = await _httpClient.GetStreamAsync($"/api/v1/localidades/estados/{estadoId}/municipios?orderBy=nome");
 
         List<Dictionary<string, object>>? apiResponse = await JsonSerializer.DeserializeAsync<List<Dictionary<string, object>>>(responseStream);
