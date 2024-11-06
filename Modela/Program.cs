@@ -1,37 +1,46 @@
 using Modela.Data;
 using Modela.Data.IBGERepositories;
+using Modela.Data.MySQLRepositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-IPaisRepository paisRepository = new PaisIBGERepository();
-IEstadoRepository estadoRepository = new EstadoIBGERepository(paisRepository);
-ICidadeRepository cidadeRepository = new CidadeIBERepository(paisRepository, estadoRepository);
+builder.Services.AddScoped<IPaisRepository, PaisIBGERepository>();
+builder.Services.AddScoped<IEstadoRepository, EstadoIBGERepository>();
+builder.Services.AddScoped<ICidadeRepository, CidadeIBERepository>();
 
-builder.Services.AddScoped<IPaisRepository>(provider => paisRepository);
-builder.Services.AddScoped<IEstadoRepository>(provider => estadoRepository);
-builder.Services.AddScoped<ICidadeRepository>(provider => cidadeRepository);
+builder.Services.AddScoped<IAccountRepository>(provider =>
+    new AccountMYSQLRepository(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
-WebApplication app = builder.Build();
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Account/Login"; // Rota de login
+        options.LogoutPath = "/Account/Logout"; // Rota de logout
+        options.AccessDeniedPath = "/Account/AccessDenied"; // Rota para acesso negado
+    });
 
-// Configure the HTTP request pipeline.
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
 if (!app.Environment.IsDevelopment())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); // Middleware de autenticação
+app.UseAuthorization();  // Middleware de autorização
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"); 
 
 app.Run();

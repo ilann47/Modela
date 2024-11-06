@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Modela.Data;
 using Modela.Models;
 using Modela.ViewModels;
 
 namespace Modela.Controllers;
+[Authorize]
 public class CidadeController : Controller {
 
     private readonly IEstadoRepository _estadoRepository;
