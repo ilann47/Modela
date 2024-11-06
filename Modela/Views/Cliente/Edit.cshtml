@@ -1,0 +1,27 @@
+﻿@model Modela.Models.Cliente
+@{
+    ViewBag.Title = "Editar Cliente";
+}
+
+<h1>Editar Cliente</h1>
+<form asp-action="Edit">
+    <input asp-for="Nome" placeholder="Nome" />
+    <input asp-for="CPF" placeholder="CPF" />
+    <input asp-for="RG" placeholder="RG" />
+    <input asp-for="DataNascimento" placeholder="Data de Nascimento" />
+    <input asp-for="Telefone" placeholder="Telefone" />
+    <input asp-for="EstadoCivil" placeholder="Estado Civil" />
+    <input asp-for="CEP" placeholder="CEP" />
+    <input asp-for="Logradouro" placeholder="Logradouro" />
+    <input asp-for="Numero" placeholder="Numero" />
+    <input asp-for="Complemento" placeholder="Complemento" />
+    <select asp-for="OCidade.Id">
+        @foreach (var cidade in ViewBag.Cidades)
+        {
+            <option value="@cidade.Id">@cidade.Nome</option>
+        }
+    </select>
+
+
+    <button type="submit">Salvar</button>
+</form>

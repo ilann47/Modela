@@ -38,5 +38,4 @@ public class CidadeController : Controller {
         return View(cidadeViewModel);
     }
 
-
 }
