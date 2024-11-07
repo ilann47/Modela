@@ -8,18 +8,19 @@ namespace Modela.Models
         public int ClienteId { get; set; }
 
         [Required]
-        public string? Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
-        public string? CPF { get; set; }
-        public string? RG { get; set; }
-        public DateTime? DataNascimento { get; set; }
-        public string? Telefone { get; set; }
-        public string? EstadoCivil { get; set; }
-        public string? CEP { get; set; }
-        public string? Logradouro { get; set; }
-        public string? Numero { get; set; }
-        public string? Complemento { get; set; }
-        public int CidadeId { get; set; }
-        public Cidade? OCidade { get; set; }
+        public string CPF { get; set; } = string.Empty;
+        public string RG { get; set; } = string.Empty;
+        public DateTime DataNascimento { get; set; } = DateTime.MinValue;
+        public string Telefone { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public char Sexo { get; set; } = ' ';
+        public string EstadoCivil { get; set; } = string.Empty;
+        public string CEP { get; set; } = string.Empty; 
+        public string Logradouro { get; set; } = string.Empty;
+        public string Numero { get; set; } = string.Empty;
+        public string Complemento { get; set; } = string.Empty;
+        public string Cidade { get; set; } = string.Empty;
     }
 }

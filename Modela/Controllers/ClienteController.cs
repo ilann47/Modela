@@ -3,112 +3,128 @@ using Modela.Data;
 using Modela.Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Modela.ViewModels;
 
-namespace Modela.Controllers
-{
+namespace Modela.Controllers {
     [Route("Cliente")] // Define a rota base para o controlador
-    public class ClienteController : Controller
-    {
+    public class ClienteController : Controller {
         private readonly IClienteRepository _clienteRepository;
+        private readonly IEstadoRepository _estadoRepository;
         private readonly ICidadeRepository _cidadeRepository;
 
-        public ClienteController(IClienteRepository clienteRepository, ICidadeRepository cidadeRepository)
-        {
+        public ClienteController(IClienteRepository clienteRepository, IEstadoRepository estadoRepository, ICidadeRepository cidadeRepository) {
             _clienteRepository = clienteRepository;
+            _estadoRepository = estadoRepository;
             _cidadeRepository = cidadeRepository;
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Index()
-        {
-            var clientes = await _clienteRepository.GetTodos();
-            foreach (var cliente in clientes)
-            {
-                if (cliente.CidadeId != 0)
-                {
-                    cliente.OCidade = await _cidadeRepository.GetById(cliente.CidadeId);
-                }
-            }
+        public async Task<IActionResult> Index() {
+            List<Cliente> clientes = await _clienteRepository.GetTodos();
+
             return View(clientes);
         }
 
         [HttpGet("Create")]
-        public async Task<IActionResult> Create()
-        {
-            ViewBag.Cidades = await _cidadeRepository.GetTodos();
-            return View();
+        public async Task<IActionResult> Create(int selectedEstadoId = 0) {
+            List<Estado> estados = await _estadoRepository.GetTodos();
+            List<Cidade> cidades = new List<Cidade>();
+
+            if (selectedEstadoId > 0) {
+                cidades = await _cidadeRepository.GetByEstadoId(selectedEstadoId);
+            }
+
+            ViewData["Estados"] = estados;
+            ViewData["Cidades"] = cidades;
+            ViewData["SelectedEstadoId"] = selectedEstadoId;
+
+            return View(new Cliente());
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Cliente cliente)
-        {
-            if (ModelState.IsValid)
-            {
+        public async Task<IActionResult> Create(Cliente cliente, int selectedEstadoId, string cidadeNome) {
+            if (ModelState.IsValid) {
+                if (selectedEstadoId > 0 && !string.IsNullOrEmpty(cidadeNome)) {
+                    cliente.Cidade = cidadeNome;
+                }
+
                 await _clienteRepository.Add(cliente);
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Cidades = await _cidadeRepository.GetTodos();
-            return View(cliente);
-        }
+            List<Estado> estados = await _estadoRepository.GetTodos();
+            List<Cidade> cidades = new List<Cidade>();
 
-        [HttpGet("Edit/{id:int}")] // Rota para editar um cliente com ID específico
-        public async Task<IActionResult> Edit(int id)
-        {
-            var cliente = await _clienteRepository.GetById(id);
-            if (cliente == null) return NotFound();
-
-            ViewBag.Cidades = await _cidadeRepository.GetTodos();
-            return View(cliente);
-        }
-
-        [HttpPost("Edit/{id:int}")]
-        public async Task<IActionResult> Edit(int id, Cliente cliente)
-        {
-            if (ModelState.IsValid)
-            {
-                var existingCliente = await _clienteRepository.GetById(id);
-                if (existingCliente == null) return NotFound();
-
-                // Atualize todos os campos, incluindo CidadeId
-                existingCliente.Nome = cliente.Nome;
-                existingCliente.CPF = cliente.CPF;
-                existingCliente.RG = cliente.RG;
-                existingCliente.DataNascimento = cliente.DataNascimento;
-                existingCliente.Telefone = cliente.Telefone;
-                existingCliente.EstadoCivil = cliente.EstadoCivil;
-                existingCliente.CEP = cliente.CEP;
-                existingCliente.Logradouro = cliente.Logradouro;
-                existingCliente.Numero = cliente.Numero;
-                existingCliente.Complemento = cliente.Complemento;
-                existingCliente.CidadeId = cliente.CidadeId; // Atualize o CidadeId
-
-                await _clienteRepository.Update(existingCliente);
-
-                return RedirectToAction("Index", "Cliente");
+            if (selectedEstadoId > 0) {
+                cidades = await _cidadeRepository.GetByEstadoId(selectedEstadoId);
             }
 
-            ViewBag.Cidades = await _cidadeRepository.GetTodos();
-            return View(cliente);
-        }
-
-
-        [HttpGet("Delete/{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var cliente = await _clienteRepository.GetById(id);
-            if (cliente == null) return NotFound();
+            ViewData["Estados"] = estados;
+            ViewData["Cidades"] = cidades;
+            ViewData["SelectedEstadoId"] = selectedEstadoId;
 
             return View(cliente);
         }
 
-        [HttpPost("Delete/{id:int}")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cliente = await _clienteRepository.GetById(id);
+        [HttpGet("Edit/{id}")]
+        public async Task<IActionResult> Edit(int id, int selectedEstadoId = 0) {
+            Cliente? cliente = await _clienteRepository.GetById(id);
             if (cliente == null) return NotFound();
 
-            await _clienteRepository.Delete(id);
+            List<Estado> estados = await _estadoRepository.GetTodos();
+            List<Cidade> cidades = new List<Cidade>();
+
+            ViewData["Estados"] = estados;
+            ViewData["Cidades"] = cidades;
+            ViewData["SelectedEstadoId"] = selectedEstadoId;
+
+            return View(cliente);
+        }
+
+        [HttpPost("Edit/{id}")]
+        public async Task<IActionResult> Edit(int id, Cliente cliente, int selectedEstadoId, string cidadeNome) {
+            if (!ModelState.IsValid) {
+                List<Estado> estados = await _estadoRepository.GetTodos();
+                List<Cidade> cidades = await _cidadeRepository.GetByEstadoId(selectedEstadoId);
+
+                ViewData["Estados"] = estados;
+                ViewData["Cidades"] = cidades;
+                ViewData["SelectedEstadoId"] = selectedEstadoId;
+
+                return View(cliente);
+            }
+
+            if (cidadeNome == null) {
+                cliente.Cidade = cliente.Cidade != string.Empty ? cliente.Cidade : string.Empty;
+            } else {
+                cliente.Cidade = cidadeNome;
+            }
+
+            cliente.ClienteId = id;
+            await _clienteRepository.Update(cliente);
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpGet("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id) {
+            Cliente? cliente = await _clienteRepository.GetById(id);
+            if (cliente == null) {
+                return NotFound();
+            }
+            return View(cliente);
+        }
+
+        [HttpPost("Delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmDelete(int id) {
+            Cliente? cliente = await _clienteRepository.GetById(id);
+            if (cliente == null) {
+                return NotFound();
+            }
+
+            await _clienteRepository.Delete(cliente.ClienteId);
             return RedirectToAction("Index");
         }
     }
