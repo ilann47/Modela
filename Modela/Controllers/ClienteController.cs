@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Modela.Controllers
 {
+    [Route("Cliente")] // Define a rota base para o controlador
     public class ClienteController : Controller
     {
         private readonly IClienteRepository _clienteRepository;
@@ -17,11 +18,10 @@ namespace Modela.Controllers
             _cidadeRepository = cidadeRepository;
         }
 
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var clientes = await _clienteRepository.GetTodos();
-
-            // Carrega o nome da cidade para cada cliente usando o CidadeId
             foreach (var cliente in clientes)
             {
                 if (cliente.CidadeId != 0)
@@ -29,19 +29,17 @@ namespace Modela.Controllers
                     cliente.OCidade = await _cidadeRepository.GetById(cliente.CidadeId);
                 }
             }
-
             return View(clientes);
         }
 
-
+        [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
-            // Carrega todas as cidades para exibição no dropdown
             ViewBag.Cidades = await _cidadeRepository.GetTodos();
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> Create(Cliente cliente)
         {
             if (ModelState.IsValid)
@@ -54,6 +52,7 @@ namespace Modela.Controllers
             return View(cliente);
         }
 
+        [HttpGet("Edit/{id:int}")] // Rota para editar um cliente com ID específico
         public async Task<IActionResult> Edit(int id)
         {
             var cliente = await _clienteRepository.GetById(id);
@@ -63,17 +62,54 @@ namespace Modela.Controllers
             return View(cliente);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(Cliente cliente)
+        [HttpPost("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id, Cliente cliente)
         {
             if (ModelState.IsValid)
             {
-                await _clienteRepository.Update(cliente);
-                return RedirectToAction("Index");
+                var existingCliente = await _clienteRepository.GetById(id);
+                if (existingCliente == null) return NotFound();
+
+                // Atualize todos os campos, incluindo CidadeId
+                existingCliente.Nome = cliente.Nome;
+                existingCliente.CPF = cliente.CPF;
+                existingCliente.RG = cliente.RG;
+                existingCliente.DataNascimento = cliente.DataNascimento;
+                existingCliente.Telefone = cliente.Telefone;
+                existingCliente.EstadoCivil = cliente.EstadoCivil;
+                existingCliente.CEP = cliente.CEP;
+                existingCliente.Logradouro = cliente.Logradouro;
+                existingCliente.Numero = cliente.Numero;
+                existingCliente.Complemento = cliente.Complemento;
+                existingCliente.CidadeId = cliente.CidadeId; // Atualize o CidadeId
+
+                await _clienteRepository.Update(existingCliente);
+
+                return RedirectToAction("Index", "Cliente");
             }
 
             ViewBag.Cidades = await _cidadeRepository.GetTodos();
             return View(cliente);
+        }
+
+
+        [HttpGet("Delete/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cliente = await _clienteRepository.GetById(id);
+            if (cliente == null) return NotFound();
+
+            return View(cliente);
+        }
+
+        [HttpPost("Delete/{id:int}")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var cliente = await _clienteRepository.GetById(id);
+            if (cliente == null) return NotFound();
+
+            await _clienteRepository.Delete(id);
+            return RedirectToAction("Index");
         }
     }
 }

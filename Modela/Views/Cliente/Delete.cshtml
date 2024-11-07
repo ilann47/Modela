@@ -6,10 +6,9 @@
     <li>CPF: @Model.CPF</li>
     <li>Nome: @Model.Nome</li>
     <li>Telefone: @Model.Telefone</li>
-    <!-- Exibe o nome da cidade, se estiver carregado -->
     <li>Cidade: @(Model.OCidade?.Nome ?? "N/A")</li>
 </ul>
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="Delete" method="post">
     <input type="hidden" asp-for="ClienteId" />
     <button type="submit">Confirmar</button>
     <a href="@Url.Action("Index")">Cancelar</a>
