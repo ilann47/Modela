@@ -14,6 +14,8 @@ namespace Modela.Models
         public string? RG { get; set; }
         public DateTime? DataNascimento { get; set; }
         public string? Telefone { get; set; }
+        public string? Email { get; set; }
+        public char? Sexo { get; set; }
         public string? EstadoCivil { get; set; }
         public string? CEP { get; set; }
         public string? Logradouro { get; set; }

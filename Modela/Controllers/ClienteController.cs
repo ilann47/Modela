@@ -76,6 +76,8 @@ namespace Modela.Controllers
                 existingCliente.RG = cliente.RG;
                 existingCliente.DataNascimento = cliente.DataNascimento;
                 existingCliente.Telefone = cliente.Telefone;
+                existingCliente.Email = cliente.Email;
+                existingCliente.Sexo = cliente.Sexo;
                 existingCliente.EstadoCivil = cliente.EstadoCivil;
                 existingCliente.CEP = cliente.CEP;
                 existingCliente.Logradouro = cliente.Logradouro;

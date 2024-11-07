@@ -26,8 +26,8 @@ namespace Modela.Data.MySQLRepositories
                 await connection.OpenAsync();
 
                 var query = @"
-                    INSERT INTO clientes (Nome, CPF, RG, DataNascimento, Telefone, EstadoCivil, CEP, Logradouro, Numero, Complemento, CidadeId)
-                    VALUES (@Nome, @CPF, @RG, @DataNascimento, @Telefone, @EstadoCivil, @CEP, @Logradouro, @Numero, @Complemento, @CidadeId)";
+                    INSERT INTO clientes (Nome, CPF, RG, DataNascimento, Telefone, Email, Sexo, EstadoCivil, CEP, Logradouro, Numero, Complemento, CidadeId)
+                    VALUES (@Nome, @CPF, @RG, @DataNascimento, @Telefone, @Email, @Sexo, @EstadoCivil, @CEP, @Logradouro, @Numero, @Complemento, @CidadeId)";
 
                 using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Nome", cliente.Nome);
@@ -35,6 +35,8 @@ namespace Modela.Data.MySQLRepositories
                 command.Parameters.AddWithValue("@RG", cliente.RG ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Telefone", cliente.Telefone ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Email", cliente.Email ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Sexo", cliente.Sexo ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@EstadoCivil", cliente.EstadoCivil ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@CEP", cliente.CEP ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Logradouro", cliente.Logradouro ?? (object)DBNull.Value);
@@ -54,7 +56,7 @@ namespace Modela.Data.MySQLRepositories
         {
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
-            var query = "UPDATE clientes SET Nome=@Nome, CPF=@CPF, RG=@RG, DataNascimento=@DataNascimento, Telefone=@Telefone, EstadoCivil=@EstadoCivil, CEP=@CEP, Logradouro=@Logradouro, Numero=@Numero, Complemento=@Complemento, CidadeId=@CidadeId WHERE ClienteId=@ClienteId";
+            var query = "UPDATE clientes SET Nome=@Nome, CPF=@CPF, RG=@RG, DataNascimento=@DataNascimento, Telefone=@Telefone, Email=@Email, Sexo=@Sexo, EstadoCivil=@EstadoCivil, CEP=@CEP, Logradouro=@Logradouro, Numero=@Numero, Complemento=@Complemento, CidadeId=@CidadeId WHERE ClienteId=@ClienteId";
 
             using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@ClienteId", cliente.ClienteId);
@@ -63,6 +65,8 @@ namespace Modela.Data.MySQLRepositories
             command.Parameters.AddWithValue("@RG", cliente.RG);
             command.Parameters.AddWithValue("@DataNascimento", (object)cliente.DataNascimento ?? DBNull.Value);
             command.Parameters.AddWithValue("@Telefone", cliente.Telefone);
+            command.Parameters.AddWithValue("@Email", cliente.Telefone);
+            command.Parameters.AddWithValue("@Sexo", cliente.Sexo);
             command.Parameters.AddWithValue("@EstadoCivil", cliente.EstadoCivil);
             command.Parameters.AddWithValue("@CEP", cliente.CEP);
             command.Parameters.AddWithValue("@Logradouro", cliente.Logradouro);
@@ -104,6 +108,8 @@ namespace Modela.Data.MySQLRepositories
                     RG = reader.GetString("RG"),
                     DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
+                    Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString("Email"),
+                    Sexo = reader.IsDBNull(reader.GetOrdinal("Sexo")) ? (char?)null : reader.GetChar("Sexo"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
@@ -135,6 +141,8 @@ namespace Modela.Data.MySQLRepositories
                     RG = reader.GetString("RG"),
                     DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
+                    Email = reader.GetString("Email"),
+                    Sexo = reader.IsDBNull(reader.GetOrdinal("Sexo")) ? (char?)null : reader.GetChar("Sexo"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
@@ -176,6 +184,8 @@ namespace Modela.Data.MySQLRepositories
                     RG = reader.GetString("RG"),
                     DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
+                    Email = reader.GetString("Email"),
+                    Sexo = reader.IsDBNull(reader.GetOrdinal("Sexo")) ? (char?)null : reader.GetChar("Sexo"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
