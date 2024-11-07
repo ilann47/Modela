@@ -23,8 +23,12 @@ builder.Services.AddScoped<IAccountRepository>(provider =>
 );
 
 builder.Services.AddScoped<IClienteRepository>(provider =>
-    new ClienteMySQLRepository(builder.Configuration.GetConnectionString("DefaultConnection"))
+    new ClienteMySQLRepository(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        provider.GetRequiredService<ICidadeRepository>()
+    )
 );
+
 
 // Configuração de autenticação e autorização
 builder.Services.AddAuthentication("CookieAuth")

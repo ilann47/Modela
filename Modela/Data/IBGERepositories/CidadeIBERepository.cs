@@ -54,10 +54,26 @@ namespace Modela.Data.IBGERepositories
             return cidades;
         }
 
-        public Task<Cidade> GetById(int id)
+        public async Task<Cidade> GetById(int id)
         {
-            throw new NotImplementedException();
+            var estados = await _estadoRepository.GetTodos();
+
+            foreach (var estado in estados)
+            {
+                var cidadesDoEstado = await GetByEstadoId(estado.Id);
+                var cidade = cidadesDoEstado.FirstOrDefault(c => c.Id == id);
+
+                if (cidade != null)
+                {
+                    return cidade;
+                }
+            }
+
+            // Retorne null ou uma cidade padrão
+            return null;  // Ou lançar uma exceção personalizada
         }
+
+
 
         public Task<Cidade> GetByNome(string name)
         {

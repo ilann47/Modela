@@ -1,71 +1,77 @@
-﻿using Modela.Models;
+﻿using Modela.Data.IBGERepositories;
+using Modela.Models;
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Modela.Data.MySQLRepositories
 {
-    [Authorize]
     public class ClienteMySQLRepository : IClienteRepository
     {
         private readonly string _connectionString;
+        private readonly ICidadeRepository _cidadeRepository;
 
-        public ClienteMySQLRepository(string connectionString) // Recebe a string de conexão via DI
+        public ClienteMySQLRepository(string connectionString, ICidadeRepository cidadeRepository)
         {
             _connectionString = connectionString;
+            _cidadeRepository = cidadeRepository;
         }
 
         public async Task Add(Cliente cliente)
         {
-            using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
-            var query = "INSERT INTO clientes (Nome, CPF, RG, DataNascimento, Telefone, EstadoCivil, CEP, Logradouro, Numero, Complemento, Cidade) VALUES (@Nome, @CPF, @RG, @DataNascimento, @Telefone, @EstadoCivil, @CEP, @Logradouro, @Numero, @Complemento, @Cidade)";
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
 
-            using var command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Nome", cliente.Nome);
-            command.Parameters.AddWithValue("@CPF", cliente.CPF);
-            command.Parameters.AddWithValue("@RG", cliente.RG);
-            command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento);
-            command.Parameters.AddWithValue("@Telefone", cliente.Telefone);
-            command.Parameters.AddWithValue("@EstadoCivil", cliente.EstadoCivil);
-            command.Parameters.AddWithValue("@CEP", cliente.CEP);
-            command.Parameters.AddWithValue("@Logradouro", cliente.Logradouro);
-            command.Parameters.AddWithValue("@Numero", cliente.Numero);
-            command.Parameters.AddWithValue("@Complemento", cliente.Complemento);
-            command.Parameters.AddWithValue("@Cidade", cliente.Cidade);
+                var query = @"
+                    INSERT INTO clientes (Nome, CPF, RG, DataNascimento, Telefone, EstadoCivil, CEP, Logradouro, Numero, Complemento, CidadeId)
+                    VALUES (@Nome, @CPF, @RG, @DataNascimento, @Telefone, @EstadoCivil, @CEP, @Logradouro, @Numero, @Complemento, @CidadeId)";
 
-            await command.ExecuteNonQueryAsync();
+                using var command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Nome", cliente.Nome);
+                command.Parameters.AddWithValue("@CPF", cliente.CPF ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@RG", cliente.RG ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Telefone", cliente.Telefone ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@EstadoCivil", cliente.EstadoCivil ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@CEP", cliente.CEP ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Logradouro", cliente.Logradouro ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Numero", cliente.Numero ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Complemento", cliente.Complemento ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@CidadeId", cliente.CidadeId != 0 ? cliente.CidadeId : (object)DBNull.Value);
+
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao adicionar cliente: {ex.Message}");
+                throw;
+            }
         }
-
         public async Task Update(Cliente cliente)
         {
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
-
-
-            var dataNascimento = cliente.DataNascimento.HasValue ? cliente.DataNascimento.Value.ToString("yyyy-MM-dd HH:mm:ss") : null;
-
-            var query = "UPDATE clientes SET Nome=@Nome, CPF=@CPF, RG=@RG, DataNascimento=@DataNascimento, Telefone=@Telefone, EstadoCivil=@EstadoCivil, CEP=@CEP, Logradouro=@Logradouro, Numero=@Numero, Complemento=@Complemento, Cidade=@Cidade WHERE ClienteId=@ClienteId";
+            var query = "UPDATE clientes SET Nome=@Nome, CPF=@CPF, RG=@RG, DataNascimento=@DataNascimento, Telefone=@Telefone, EstadoCivil=@EstadoCivil, CEP=@CEP, Logradouro=@Logradouro, Numero=@Numero, Complemento=@Complemento, CidadeId=@CidadeId WHERE ClienteId=@ClienteId";
 
             using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@ClienteId", cliente.ClienteId);
             command.Parameters.AddWithValue("@Nome", cliente.Nome);
             command.Parameters.AddWithValue("@CPF", cliente.CPF);
             command.Parameters.AddWithValue("@RG", cliente.RG);
-            command.Parameters.AddWithValue("@DataNascimento", (object)dataNascimento ?? DBNull.Value);
+            command.Parameters.AddWithValue("@DataNascimento", (object)cliente.DataNascimento ?? DBNull.Value);
             command.Parameters.AddWithValue("@Telefone", cliente.Telefone);
             command.Parameters.AddWithValue("@EstadoCivil", cliente.EstadoCivil);
             command.Parameters.AddWithValue("@CEP", cliente.CEP);
             command.Parameters.AddWithValue("@Logradouro", cliente.Logradouro);
             command.Parameters.AddWithValue("@Numero", cliente.Numero);
             command.Parameters.AddWithValue("@Complemento", cliente.Complemento);
-            command.Parameters.AddWithValue("@Cidade", cliente.Cidade);
+            command.Parameters.AddWithValue("@CidadeId", cliente.CidadeId);
 
             await command.ExecuteNonQueryAsync();
         }
-
 
         public async Task Delete(int id)
         {
@@ -81,7 +87,7 @@ namespace Modela.Data.MySQLRepositories
 
         public async Task<List<Cliente>> GetTodos()
         {
-            List<Cliente> clientes = new();
+            var clientes = new List<Cliente>();
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
             var query = "SELECT * FROM clientes";
@@ -90,30 +96,24 @@ namespace Modela.Data.MySQLRepositories
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                // Verifique se o campo DataNascimento é nulo
-                DateTime? dataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento"))
-                    ? (DateTime?)null
-                    : reader.GetDateTime("DataNascimento");
-
                 clientes.Add(new Cliente
                 {
                     ClienteId = reader.GetInt32("ClienteId"),
                     Nome = reader.GetString("Nome"),
                     CPF = reader.GetString("CPF"),
                     RG = reader.GetString("RG"),
-                    DataNascimento = dataNascimento,  
+                    DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
                     Numero = reader.GetString("Numero"),
                     Complemento = reader.GetString("Complemento"),
-                    Cidade = reader.GetString("Cidade")
+                    CidadeId = reader.IsDBNull(reader.GetOrdinal("CidadeId")) ? 0 : reader.GetInt32("CidadeId") // Verifique se CidadeId é nulo
                 });
             }
             return clientes;
         }
-
 
         public async Task<Cliente?> GetById(int id)
         {
@@ -123,37 +123,48 @@ namespace Modela.Data.MySQLRepositories
 
             using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@id", id);
+
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new Cliente
+                var cliente = new Cliente
                 {
                     ClienteId = reader.GetInt32("ClienteId"),
                     Nome = reader.GetString("Nome"),
                     CPF = reader.GetString("CPF"),
                     RG = reader.GetString("RG"),
-                    DataNascimento = reader.GetDateTime("DataNascimento"),
+                    DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
                     Numero = reader.GetString("Numero"),
                     Complemento = reader.GetString("Complemento"),
-                    Cidade = reader.GetString("Cidade")
+                    CidadeId = reader.GetInt32("CidadeId")
                 };
+
+                // Carregar o objeto OCidade usando o repositório de cidades
+                if (cliente.CidadeId != 0)
+                {
+                    cliente.OCidade = await _cidadeRepository.GetById(cliente.CidadeId);
+                }
+
+                return cliente;
             }
             return null;
         }
 
+
         public async Task<List<Cliente>> GetByNome(string nome)
         {
-            List<Cliente> clientes = new();
+            var clientes = new List<Cliente>();
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
             var query = "SELECT * FROM clientes WHERE Nome LIKE @nome";
 
             using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@nome", $"%{nome}%");
+
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -163,14 +174,14 @@ namespace Modela.Data.MySQLRepositories
                     Nome = reader.GetString("Nome"),
                     CPF = reader.GetString("CPF"),
                     RG = reader.GetString("RG"),
-                    DataNascimento = reader.GetDateTime("DataNascimento"),
+                    DataNascimento = reader.IsDBNull(reader.GetOrdinal("DataNascimento")) ? (DateTime?)null : reader.GetDateTime("DataNascimento"),
                     Telefone = reader.GetString("Telefone"),
                     EstadoCivil = reader.GetString("EstadoCivil"),
                     CEP = reader.GetString("CEP"),
                     Logradouro = reader.GetString("Logradouro"),
                     Numero = reader.GetString("Numero"),
                     Complemento = reader.GetString("Complemento"),
-                    Cidade = reader.GetString("Cidade")
+                    CidadeId = reader.GetInt32("CidadeId")
                 });
             }
             return clientes;

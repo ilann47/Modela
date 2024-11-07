@@ -1,11 +1,13 @@
 ﻿@model Modela.Models.Cliente
+
 <h1>Deletar Cliente</h1>
 <p>Tem certeza de que deseja deletar o cliente abaixo?</p>
 <ul>
     <li>CPF: @Model.CPF</li>
-    <li>Nome: @Model.RG</li>
+    <li>Nome: @Model.Nome</li>
     <li>Telefone: @Model.Telefone</li>
-    <li>Cidade: @Model.Cidade</li>
+    <!-- Exibe o nome da cidade, se estiver carregado -->
+    <li>Cidade: @(Model.OCidade?.Nome ?? "N/A")</li>
 </ul>
 <form asp-action="DeleteConfirmed" method="post">
     <input type="hidden" asp-for="ClienteId" />

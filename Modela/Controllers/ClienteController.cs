@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Modela.Data;
 using Modela.Models;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Modela.Controllers
 {
-    [Authorize]
     public class ClienteController : Controller
     {
         private readonly IClienteRepository _clienteRepository;
@@ -21,13 +20,24 @@ namespace Modela.Controllers
         public async Task<IActionResult> Index()
         {
             var clientes = await _clienteRepository.GetTodos();
+
+            // Carrega o nome da cidade para cada cliente usando o CidadeId
+            foreach (var cliente in clientes)
+            {
+                if (cliente.CidadeId != 0)
+                {
+                    cliente.OCidade = await _cidadeRepository.GetById(cliente.CidadeId);
+                }
+            }
+
             return View(clientes);
         }
 
+
         public async Task<IActionResult> Create()
         {
-            var cidades = await _cidadeRepository.GetTodos();
-            ViewBag.Cidades = cidades;
+            // Carrega todas as cidades para exibição no dropdown
+            ViewBag.Cidades = await _cidadeRepository.GetTodos();
             return View();
         }
 
@@ -39,6 +49,8 @@ namespace Modela.Controllers
                 await _clienteRepository.Add(cliente);
                 return RedirectToAction("Index");
             }
+
+            ViewBag.Cidades = await _cidadeRepository.GetTodos();
             return View(cliente);
         }
 
@@ -59,29 +71,9 @@ namespace Modela.Controllers
                 await _clienteRepository.Update(cliente);
                 return RedirectToAction("Index");
             }
+
             ViewBag.Cidades = await _cidadeRepository.GetTodos();
             return View(cliente);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var cliente = await _clienteRepository.GetById(id);
-            if (cliente == null) return NotFound();
-
-            return View(cliente);
-        }
-
-        [HttpPost, ActionName("DeleteConfirmed")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _clienteRepository.Delete(id);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<IActionResult> Search(string nome)
-        {
-            var clientes = await _clienteRepository.GetByNome(nome);
-            return View("Index", clientes);
         }
     }
 }

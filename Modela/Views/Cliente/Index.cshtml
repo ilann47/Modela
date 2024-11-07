@@ -28,7 +28,7 @@
             <td>@cliente.Logradouro</td>
             <td>@cliente.Numero</td>
             <td>@cliente.Complemento</td>
-            <td>@cliente.Cidade</td>
+            <td>@cliente.OCidade?.Nome</td>
             <td>
                 <a href="@Url.Action("Edit", new { id = cliente.ClienteId })">Editar</a> |
                 <a href="@Url.Action("Delete", new { id = cliente.ClienteId })">Deletar</a>
