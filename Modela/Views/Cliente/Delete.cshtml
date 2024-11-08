@@ -1,15 +1,60 @@
 ﻿@model Modela.Models.Cliente
 
-<h1>Deletar Cliente</h1>
-<p>Tem certeza de que deseja deletar o cliente abaixo?</p>
-<ul>
-    <li>CPF: @Model.CPF</li>
-    <li>Nome: @Model.Nome</li>
-    <li>Telefone: @Model.Telefone</li>
-    <li>Cidade: @(Model.OCidade?.Nome ?? "N/A")</li>
-</ul>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="ClienteId" />
-    <button type="submit">Confirmar</button>
-    <a href="@Url.Action("Index")">Cancelar</a>
-</form>
+@{
+    ViewData["Title"] = "Confirmação de exclusão";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Você tem certeza que deseja excluir este cliente?</h4>
+        <p>Esta ação não pode ser revertida.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Informações do Cliente</h5>
+
+            <dl class="row">
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">@Model.Nome</dd>
+
+                <dt class="col-sm-3">CPF</dt>
+                <dd class="col-sm-9">@Model.CPF</dd>
+
+                <dt class="col-sm-3">RG</dt>
+                <dd class="col-sm-9">@Model.RG</dd>
+
+                <dt class="col-sm-3">Data de Nascimento</dt>
+                <dd class="col-sm-9">@Model.DataNascimento.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9">@Model.Telefone</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Estado Civil</dt>
+                <dd class="col-sm-9">@Model.EstadoCivil</dd>
+
+                <dt class="col-sm-3">Endereço</dt>
+                <dd class="col-sm-9">
+                    @Model.Logradouro, @Model.Numero @Model.Complemento<br />
+                    @Model.Cidade, @Model.CEP
+                </dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.ClienteId" />
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                    <a href="@Url.Action("Index", "Cliente")" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
