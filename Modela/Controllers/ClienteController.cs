@@ -82,8 +82,21 @@ namespace Modela.Controllers {
         }
 
         [HttpPost("Edit/{id}")]
-        public async Task<IActionResult> Edit(int id, Cliente cliente, int selectedEstadoId, string cidadeNome) {
-            if (!ModelState.IsValid) {
+        public async Task<IActionResult> Edit(int id, Cliente cliente, int selectedEstadoId, string cidadeNome, bool isSubmit) {
+            Cliente? clienteAntigo = await _clienteRepository.GetById(id); 
+
+            if (clienteAntigo == null) return NotFound();
+
+            if (cidadeNome == null) {
+                cliente.Cidade = clienteAntigo.Cidade != string.Empty ? clienteAntigo.Cidade : string.Empty;
+            } else {
+                cliente.Cidade = cidadeNome;
+            }
+
+            ModelState.Remove("cidadeNome");
+            ModelState.Remove("selectedEstadoId");
+
+            if (!ModelState.IsValid || !isSubmit) {
                 List<Estado> estados = await _estadoRepository.GetTodos();
                 List<Cidade> cidades = await _cidadeRepository.GetByEstadoId(selectedEstadoId);
 
@@ -92,12 +105,6 @@ namespace Modela.Controllers {
                 ViewData["SelectedEstadoId"] = selectedEstadoId;
 
                 return View(cliente);
-            }
-
-            if (cidadeNome == null) {
-                cliente.Cidade = cliente.Cidade != string.Empty ? cliente.Cidade : string.Empty;
-            } else {
-                cliente.Cidade = cidadeNome;
             }
 
             cliente.ClienteId = id;
