@@ -15,7 +15,7 @@ namespace Modela.Models
         public DateTime DataNascimento { get; set; } = DateTime.MinValue;
         public string Telefone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public char Sexo { get; set; } = ' ';
+        public char Sexo { get; set; } = '\0';
         public string EstadoCivil { get; set; } = string.Empty;
         public string CEP { get; set; } = string.Empty; 
         public string Logradouro { get; set; } = string.Empty;

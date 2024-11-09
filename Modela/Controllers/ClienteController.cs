@@ -95,6 +95,7 @@ namespace Modela.Controllers {
 
             ModelState.Remove("cidadeNome");
             ModelState.Remove("selectedEstadoId");
+            ModelState.Remove("Complemento");
 
             if (!ModelState.IsValid || !isSubmit) {
                 List<Estado> estados = await _estadoRepository.GetTodos();

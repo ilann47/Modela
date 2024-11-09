@@ -27,19 +27,19 @@ namespace Modela.Data.MySQLRepositories {
                 VALUES (@Nome, @CPF, @RG, @DataNascimento, @Telefone, @Email, @Sexo, @EstadoCivil, @CEP, @Logradouro, @Numero, @Complemento, @Cidade)";
 
             using var command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Nome", DBNullIfEmpty(cliente.Nome.ToUpper()));
-            command.Parameters.AddWithValue("@CPF", DBNullIfEmpty(cliente.CPF.ToUpper()));
-            command.Parameters.AddWithValue("@RG", DBNullIfEmpty(cliente.RG.ToUpper()));
+            command.Parameters.AddWithValue("@Nome", DBNullIfEmpty(cliente.Nome?.ToUpper()));
+            command.Parameters.AddWithValue("@CPF", DBNullIfEmpty(cliente.CPF?.ToUpper()));
+            command.Parameters.AddWithValue("@RG", DBNullIfEmpty(cliente.RG?.ToUpper()));
             command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento == DateTime.MinValue ? (object) DBNull.Value : cliente.DataNascimento);
-            command.Parameters.AddWithValue("@Telefone", DBNullIfEmpty(cliente.Telefone.ToUpper()));
-            command.Parameters.AddWithValue("@Email", DBNullIfEmpty(cliente.Email.ToUpper()));
+            command.Parameters.AddWithValue("@Telefone", DBNullIfEmpty(cliente.Telefone?.ToUpper()));
+            command.Parameters.AddWithValue("@Email", DBNullIfEmpty(cliente.Email?.ToUpper()));
             command.Parameters.AddWithValue("@Sexo", char.ToUpper(cliente.Sexo));
-            command.Parameters.AddWithValue("@EstadoCivil", DBNullIfEmpty(cliente.EstadoCivil.ToUpper()));
-            command.Parameters.AddWithValue("@CEP", DBNullIfEmpty(cliente.CEP.ToUpper()));
-            command.Parameters.AddWithValue("@Logradouro", DBNullIfEmpty(cliente.Logradouro.ToUpper()));
-            command.Parameters.AddWithValue("@Numero", DBNullIfEmpty(cliente.Numero.ToUpper()));
-            command.Parameters.AddWithValue("@Complemento", DBNullIfEmpty(cliente.Complemento.ToUpper()));
-            command.Parameters.AddWithValue("@Cidade", DBNullIfEmpty(cliente.Cidade.ToUpper()));
+            command.Parameters.AddWithValue("@EstadoCivil", DBNullIfEmpty(cliente.EstadoCivil?.ToUpper()));
+            command.Parameters.AddWithValue("@CEP", DBNullIfEmpty(cliente.CEP?.ToUpper()));
+            command.Parameters.AddWithValue("@Logradouro", DBNullIfEmpty(cliente.Logradouro?.ToUpper()));
+            command.Parameters.AddWithValue("@Numero", DBNullIfEmpty(cliente.Numero?.ToUpper()));
+            command.Parameters.AddWithValue("@Complemento", DBNullIfEmpty(cliente.Complemento?.ToUpper()));
+            command.Parameters.AddWithValue("@Cidade", DBNullIfEmpty(cliente.Cidade?.ToUpper()));
 
             await command.ExecuteNonQueryAsync();
         }
@@ -55,19 +55,19 @@ namespace Modela.Data.MySQLRepositories {
 
             using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@ClienteId", cliente.ClienteId);
-            command.Parameters.AddWithValue("@Nome", DBNullIfEmpty(cliente.Nome.ToUpper()));
-            command.Parameters.AddWithValue("@CPF", DBNullIfEmpty(cliente.CPF.ToUpper()));
-            command.Parameters.AddWithValue("@RG", DBNullIfEmpty(cliente.RG.ToUpper()));
+            command.Parameters.AddWithValue("@Nome", DBNullIfEmpty(cliente.Nome?.ToUpper()));
+            command.Parameters.AddWithValue("@CPF", DBNullIfEmpty(cliente.CPF?.ToUpper()));
+            command.Parameters.AddWithValue("@RG", DBNullIfEmpty(cliente.RG?.ToUpper()));
             command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento == DateTime.MinValue ? (object) DBNull.Value : cliente.DataNascimento);
-            command.Parameters.AddWithValue("@Telefone", DBNullIfEmpty(cliente.Telefone.ToUpper()));
-            command.Parameters.AddWithValue("@Email", DBNullIfEmpty(cliente.Email.ToUpper()));
+            command.Parameters.AddWithValue("@Telefone", DBNullIfEmpty(cliente.Telefone?.ToUpper()));
+            command.Parameters.AddWithValue("@Email", DBNullIfEmpty(cliente.Email?.ToUpper()));
             command.Parameters.AddWithValue("@Sexo", char.ToUpper(cliente.Sexo));
-            command.Parameters.AddWithValue("@EstadoCivil", DBNullIfEmpty(cliente.EstadoCivil.ToUpper()));
-            command.Parameters.AddWithValue("@CEP", DBNullIfEmpty(cliente.CEP.ToUpper()));
-            command.Parameters.AddWithValue("@Logradouro", DBNullIfEmpty(cliente.Logradouro.ToUpper()));
-            command.Parameters.AddWithValue("@Numero", DBNullIfEmpty(cliente.Numero.ToUpper()));
-            command.Parameters.AddWithValue("@Complemento", DBNullIfEmpty(cliente.Complemento.ToUpper()));
-            command.Parameters.AddWithValue("@Cidade", DBNullIfEmpty(cliente.Cidade.ToUpper()));
+            command.Parameters.AddWithValue("@EstadoCivil", DBNullIfEmpty(cliente.EstadoCivil?.ToUpper()));
+            command.Parameters.AddWithValue("@CEP", DBNullIfEmpty(cliente.CEP?.ToUpper()));
+            command.Parameters.AddWithValue("@Logradouro", DBNullIfEmpty(cliente.Logradouro?.ToUpper()));
+            command.Parameters.AddWithValue("@Numero", DBNullIfEmpty(cliente.Numero?.ToUpper()));
+            command.Parameters.AddWithValue("@Complemento", DBNullIfEmpty(cliente.Complemento?.ToUpper()));
+            command.Parameters.AddWithValue("@Cidade", DBNullIfEmpty(cliente.Cidade?.ToUpper()));
 
             await command.ExecuteNonQueryAsync();
         }
@@ -92,7 +92,7 @@ namespace Modela.Data.MySQLRepositories {
                     DataNascimento = reader["DataNascimento"] == DBNull.Value ? DateTime.MinValue : (DateTime) reader["DataNascimento"],
                     Telefone = EmptyIfDBNull(reader["Telefone"]).ToUpper(),
                     Email = EmptyIfDBNull(reader["Email"]).ToUpper(),
-                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? ' ' : reader.GetChar("Sexo")),
+                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? '\0' : reader.GetChar("Sexo")),
                     EstadoCivil = EmptyIfDBNull(reader["EstadoCivil"]).ToUpper(),
                     CEP = EmptyIfDBNull(reader["CEP"]).ToUpper(),
                     Logradouro = EmptyIfDBNull(reader["Logradouro"]).ToUpper(),
@@ -124,7 +124,7 @@ namespace Modela.Data.MySQLRepositories {
                     DataNascimento = reader["DataNascimento"] == DBNull.Value ? DateTime.MinValue : (DateTime) reader["DataNascimento"],
                     Telefone = EmptyIfDBNull(reader["Telefone"]).ToUpper(),
                     Email = EmptyIfDBNull(reader["Email"]).ToUpper(),
-                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? ' ' : reader.GetChar("Sexo")),
+                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? '\0' : reader.GetChar("Sexo")),
                     EstadoCivil = EmptyIfDBNull(reader["EstadoCivil"]).ToUpper(),
                     CEP = EmptyIfDBNull(reader["CEP"]).ToUpper(),
                     Logradouro = EmptyIfDBNull(reader["Logradouro"]).ToUpper(),
@@ -155,7 +155,7 @@ namespace Modela.Data.MySQLRepositories {
                     DataNascimento = reader["DataNascimento"] == DBNull.Value ? DateTime.MinValue : (DateTime) reader["DataNascimento"],
                     Telefone = EmptyIfDBNull(reader["Telefone"]).ToUpper(),
                     Email = EmptyIfDBNull(reader["Email"]).ToUpper(),
-                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? ' ' : reader.GetChar("Sexo")),
+                    Sexo = char.ToUpper(reader.IsDBNull(reader.GetOrdinal("Sexo")) ? '\0' : reader.GetChar("Sexo")),
                     EstadoCivil = EmptyIfDBNull(reader["EstadoCivil"]).ToUpper(),
                     CEP = EmptyIfDBNull(reader["CEP"]).ToUpper(),
                     Logradouro = EmptyIfDBNull(reader["Logradouro"]).ToUpper(),
