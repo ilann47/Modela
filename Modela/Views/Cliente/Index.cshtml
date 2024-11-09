@@ -40,7 +40,9 @@
                         <td>@cliente.RG</td>
                         <td>@cliente.DataNascimento.ToString("dd/MM/yyyy")</td>
                         <td>@cliente.Telefone</td>
-                        <td>@cliente.Email</td>
+                        <td style="max-width: 150px; word-wrap: break-word;">
+                            @cliente.Email
+                        </td>
                         <td>@cliente.Sexo</td>
                         <td>@cliente.EstadoCivil</td>
                         <td>@cliente.CEP</td>

@@ -20,3 +20,7 @@ html {
 body {
     margin-bottom: 60px;
 }
+
+input[type="text"], input[type="email"] {
+    text-transform: uppercase;
+}
