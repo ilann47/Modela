@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Modela.Data;
 using Modela.Models;
 using System.Threading.Tasks;

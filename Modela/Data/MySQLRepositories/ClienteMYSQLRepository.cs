@@ -1,4 +1,4 @@
-﻿using Modela.Data.IBGERepositories;
+using Modela.Data.IBGERepositories;
 using Modela.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
