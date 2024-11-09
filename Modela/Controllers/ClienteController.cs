@@ -43,6 +43,8 @@ namespace Modela.Controllers {
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Cliente cliente, int selectedEstadoId, string cidadeNome) {
+            ModelState.Remove("Complemento");
+
             if (ModelState.IsValid) {
                 if (selectedEstadoId > 0 && !string.IsNullOrEmpty(cidadeNome)) {
                     cliente.Cidade = cidadeNome;
@@ -95,6 +97,7 @@ namespace Modela.Controllers {
 
             ModelState.Remove("cidadeNome");
             ModelState.Remove("selectedEstadoId");
+            ModelState.Remove("Complemento");
 
             if (!ModelState.IsValid || !isSubmit) {
                 List<Estado> estados = await _estadoRepository.GetTodos();
