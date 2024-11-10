@@ -39,8 +39,13 @@
 				</div>
 
 				<div class="mb-3">
-					<label for="Sexo" class="form-label">Sexo (M, F, O)</label>
-					<input type="text" class="form-control" id="Sexo" name="Sexo" value="@Model.Sexo" maxlength="1" />
+					<label for="Sexo" class="form-label">Sexo</label>
+					<select class="form-control" id="Sexo" name="Sexo" required>
+						<option value="">Selecione o Sexo</option>
+						@Html.Raw($"<option value=\"M\" {(Model.Sexo == 'M' ? "selected" : "")}>Masculino</option>")
+						@Html.Raw($"<option value=\"F\" {(Model.Sexo == 'F' ? "selected" : "")}>Feminino</option>")
+						@Html.Raw($"<option value=\"O\" {(Model.Sexo == 'O' ? "selected" : "")}>Outro</option>")
+					</select>
 				</div>
 
 				<div class="mb-3">
