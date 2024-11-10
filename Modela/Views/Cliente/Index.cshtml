@@ -40,7 +40,9 @@
                         <td>@cliente.RG</td>
                         <td>@cliente.DataNascimento.ToString("dd/MM/yyyy")</td>
                         <td>@cliente.Telefone</td>
-                        <td>@cliente.Email</td>
+                        <td style="max-width: 150px; word-wrap: break-word;">
+                            @cliente.Email
+                        </td>
                         <td>@cliente.Sexo</td>
                         <td>@cliente.EstadoCivil</td>
                         <td>@cliente.CEP</td>
@@ -51,7 +53,7 @@
                         <td>
                             <div class="btn-group" role="group">
                                 <a href="@Url.Action("Edit", new { id = cliente.ClienteId })" class="btn btn-primary btn-sm">Editar</a>
-                                <a href="@Url.Action("Delete", new { id = cliente.ClienteId })" class="btn btn-danger btn-sm">Deletar</a>
+                                <a href="@Url.Action("Delete", new { id = cliente.ClienteId })" class="btn btn-danger btn-sm">Excluir</a>
                             </div>
                         </td>
                     </tr>
